@@ -82,7 +82,6 @@ bool byRatingDescending(const Song& left, const Song& right) {
 
 int main() {
     Playlist playlist;
-    
     addSong(playlist, Song{"Bohemian Rhapsody", "Queen", Genre::Rock, 9.5f, 1000});
     addSong(playlist, Song{"Blinding Lights", "The Weeknd", Genre::Pop, 8.7f, 5000});
     addSong(playlist, Song{"Master of Puppets", "Metallica", Genre::Thrash, 9.8f, 2000});
