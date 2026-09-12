@@ -99,13 +99,64 @@ void writeLog(const Log& log, std::ofstream& ofs) {
     ofs.write((const char*)&log.type, sizeof(LogType));
 }
 
+Log readLog(std::ifstream& ifs) {
+    if (!ifs.is_open()) {
+        throw std::runtime_error("File cannot be opened");
+    }
+
+    Log result;
+    size_t logMessageSize = 0;
+    ifs.read((char*)&logMessageSize, sizeof(size_t));
+    ifs.read((char*)result.message, logMessageSize);
+    result.message[logMessageSize] = '\0';
+    ifs.read((char*)&result.type, sizeof(LogType));
+    return result;
+}
+
+void saveLastPosition(const char* logFileName, size_t position, const char* fileName) {
+    if (!logFileName || !fileName) {
+        throw std::runtime_error("Nullptr detected");
+    }
+
+    std::ofstream ofs(fileName, std::ios::binary | std::ios::trunc);
+    if (!ofs.is_open()) {
+        throw std::runtime_error("File cannot be opened");
+    }
+
+    size_t logFileNameSize = strlen(logFileName);
+    ofs.write((const char*)&logFileNameSize, sizeof(size_t));
+    ofs.write((const char*)logFileName, logFileNameSize);
+    ofs.write((const char*)&position, sizeof(size_t));
+    ofs.close();
+}
+
+size_t loadLastPosition(const char* fileName) {
+    if (!fileName) {
+        throw std::runtime_error("Nullptr detected");
+    }
+
+    std::ifstream ifs(fileName, std::ios::binary);
+    if (!ifs.is_open()) {
+        return 0;
+    }
+
+    char logFileName[256]{};
+    size_t logFileNameSize = 0;
+    ifs.read((char*)&logFileNameSize, sizeof(size_t));
+    ifs.read((char*)logFileName, logFileNameSize);
+
+    size_t position = 0;
+    ifs.read((char*)&position, sizeof(size_t));
+    ifs.close();
+    return position;
+}
+
 void run(const char* fileName1, const char* fileName2) {
     if (!fileName1 || !fileName2) {
         throw std::runtime_error("Nullptr detected");
     }
 
-    std::ofstream ofs(fileName1, std::ios::binary);
-    std::ofstream ofsLast(fileName2, std::ios::binary | std::ios::trunc);
+    std::ofstream ofs(fileName1, std::ios::binary | std::ios::app);
     if (!ofs.is_open()) {
         throw std::runtime_error("File cannot be opened");
     }
@@ -113,17 +164,41 @@ void run(const char* fileName1, const char* fileName2) {
     char currentLine[1024]{};
     while (std::cin.getline(currentLine, sizeof(currentLine))) {
         Log currentLog = parseLog(currentLine);
-        writeLog(currentLog, ofsLast);
         writeLog(currentLog, ofs);
     }
 
     ofs.clear();
-    ofsLast.clear();
     ofs.close();
-    ofsLast.close();
+}
+
+void showNewErrors(const char* fileName1, const char* fileName2) {
+    if (!fileName1 || !fileName2) {
+        throw std::runtime_error("Nullptr detected");
+    }
+
+    std::ifstream ifs(fileName1, std::ios::binary);
+    if (!ifs.is_open()) {
+        throw std::runtime_error("File cannot be opened");
+    }
+
+    size_t lastPosition = loadLastPosition(fileName2);
+    ifs.seekg(0, std::ios::end);
+    size_t endPosition = ifs.tellg();
+    ifs.seekg(lastPosition, std::ios::beg);
+
+    while ((size_t)ifs.tellg() < endPosition) {
+        Log currentLog = readLog(ifs);
+        if (currentLog.type == LogType::Error) {
+            std::cout << currentLog.message << std::endl;
+        }
+    }
+
+    ifs.close();
+    saveLastPosition(fileName1, endPosition, fileName2);
 }
 
 int main() {
     run("logs.bin", "last_read_position.bin");
+    showNewErrors("logs.bin", "last_read_position.bin");
     return 0;
 }
