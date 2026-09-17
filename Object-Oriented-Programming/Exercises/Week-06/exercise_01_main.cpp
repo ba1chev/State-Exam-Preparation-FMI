@@ -6,22 +6,22 @@ int main() {
     set.addNumber(7);
     set.addNumber(42);
     set.addNumber(100);
-    set.print(); // {3 7 42 100 }
+    set.print();
 
-    std::cout << set.hasNumber(42) << std::endl; // 1
-    std::cout << set.hasNumber(41) << std::endl; // 0
+    std::cout << set.hasNumber(42) << std::endl;
+    std::cout << set.hasNumber(41) << std::endl;
 
     set.removeNumber(7);
-    set.print(); // {3 42 100 }
-    std::cout << set.hasNumber(7) << std::endl; // 0
+    set.print();
+    std::cout << set.hasNumber(7) << std::endl;
 
     BitSet copy = set;
     copy.addNumber(200);
-    copy.print(); // {3 42 100 200 }
-    set.print();  // {3 42 100 }
+    copy.print();
+    set.print();
 
     BitSet moved = std::move(copy);
-    moved.print(); // {3 42 100 200 }
+    moved.print();
 
     return 0;
 }
