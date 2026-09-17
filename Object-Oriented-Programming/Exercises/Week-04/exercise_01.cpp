@@ -177,14 +177,14 @@ public:
 
 int main() {
     KBaseNumber number1("CE9A", 16);
-    number1.print(); // CE9A(16)
-    number1.printConvertedTo(8); // 147232(8)
+    number1.print();
+    number1.printConvertedTo(8);
 
     KBaseNumber number2("147232", 8);
-    std::cout << number1.compareWith(number2) << std::endl; // 0
+    std::cout << number1.compareWith(number2) << std::endl;
 
     number2.update("1312", 4);
-    std::cout << number2.compareWith(number1) << std::endl; // -1
+    std::cout << number2.compareWith(number1) << std::endl;
 
     KBaseNumber number3;
     number1.saveToFile("file.bin");
