@@ -260,7 +260,6 @@ public:
 
 int main() {
     Navy navy;
-
     navy.addShip(Ship("Bismarck", 12, 1939, ShipClass::Battleship));
     navy.addShip(Ship("Hood", 8, 1918, ShipClass::Battlecruiser));
     navy.addShip(Ship("Yamato", 18, 1940, ShipClass::Battleship));
@@ -275,7 +274,6 @@ int main() {
 
     Navy other;
     other.addShip(Ship("Iowa", 9, 1942, ShipClass::Battleship));
-
     std::cout << "Compare: " << navy.compareWithOtherNavy(other) << std::endl;
 
     return 0;
