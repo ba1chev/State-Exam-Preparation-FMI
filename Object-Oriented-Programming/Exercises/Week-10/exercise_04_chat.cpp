@@ -74,27 +74,46 @@ void Chat::unmute(const char* name) {
     }
 }
 
-std::weak_ptr<User> Chat::operator [] (size_t index) {
-    if (index >= this->usersWeakPtrs.size()) {
-        throw std::out_of_range("Index is out of range");
-    }
-    return this->usersWeakPtrs[index];
-}
-
-const std::weak_ptr<User> Chat::operator [] (size_t index) const {
-    if (index >= this->usersWeakPtrs.size()) {
-        throw std::out_of_range("Index is out of range");
-    }
-    return this->usersWeakPtrs[index];
-}
-
-void Chat::broadcast(const Message& message) const {
+std::shared_ptr<User> Chat::operator [] (const char* name) {
     for (size_t i = 0; i < this->usersWeakPtrs.size(); i++) {
         std::shared_ptr<User> currentUserPtr = this->usersWeakPtrs[i].lock();
-        if (currentUserPtr) {
-            currentUserPtr->receive(message);
+        if (currentUserPtr && !strcmp(currentUserPtr->getName(), name)) {
+            return currentUserPtr;
         }
     }
+    return nullptr;
+}
+
+void Chat::broadcast(const Message& message) {
+    if (this->isMuted(message.getSender())) {
+        return;
+    }
+    this->history.push_back(message);
+
+    if (!strcmp(message.getRecipient(), this->name)) {
+        for (size_t i = 0; i < this->usersWeakPtrs.size(); i++) {
+            std::shared_ptr<User> currentUserPtr = this->usersWeakPtrs[i].lock();
+            if (currentUserPtr && strcmp(currentUserPtr->getName(), message.getSender())) {
+                currentUserPtr->receive(message);
+            }
+        }
+        return;
+    }
+
+    std::shared_ptr<User> recipientPtr = (*this)[message.getRecipient()];
+    if (recipientPtr) {
+        recipientPtr->receive(message);
+    }
+}
+
+Chat::operator bool() const {
+    size_t aliveUsers = 0;
+    for (size_t i = 0; i < this->usersWeakPtrs.size(); i++) {
+        if (this->usersWeakPtrs[i].lock()) {
+            aliveUsers += 1;
+        }
+    }
+    return aliveUsers >= 2;
 }
 
 const char* Chat::getName() const {
@@ -103,4 +122,14 @@ const char* Chat::getName() const {
 
 size_t Chat::getUsersCount() const {
     return this->usersWeakPtrs.size();
+}
+
+std::ostream& operator << (std::ostream& os, const Chat& chat) {
+    os << "[Chat]:  " << chat.name << std::endl;
+    os << "[Users]: " << chat.getUsersCount() << std::endl;
+    os << "[History]:" << std::endl;
+    for (size_t i = 0; i < chat.history.size(); i++) {
+        os << chat.history[i];
+    }
+    return os;
 }
