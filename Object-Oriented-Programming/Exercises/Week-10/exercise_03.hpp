@@ -23,6 +23,7 @@
 // записва я в кеша и я връща.
 #pragma once
 #include <iostream>
+#include <stdexcept>
 
 template <class K, class V>
 struct CacheNode {
@@ -64,6 +65,7 @@ public:
     ~WeakCache();
 
     const V& getValueBy(const K& key) const;
+    void removeValueBy(const K& key);
 };
 
 template <class K, class V>
@@ -174,4 +176,43 @@ void WeakCache<K, V>::moveTo(WeakCache&& other) noexcept {
 
     other.rootNode = nullptr;
     other.cacheCapacity = 0;
+}
+
+template <class K, class V>
+const V& WeakCache<K, V>::getValueBy(const K& key) const {
+    CacheNode<K, V>* currentNode = this->rootNode;
+    while (currentNode != nullptr && currentNode->nextNode != nullptr) {
+        if (currentNode->key == key) {
+            return currentNode->value;
+        }
+        currentNode = currentNode->nextNode;
+    }
+    throw std::runtime_error("Not found");
+}
+
+template <class K, class V>
+void WeakCache<K, V>::removeValueBy(const K& key) {
+    CacheNode<K, V>* currentNode = this->rootNode;
+    while (currentNode != nullptr && currentNode->nextNode != nullptr) {
+        if (currentNode->key == key) {
+            if (currentNode->chainingNode != nullptr) {
+                CacheNode<K, V>* currentChainingNode = currentNode->chainingNode;
+                CacheNode<K, V>* lastChainingNode = nullptr;
+
+                while (currentChainingNode != nullptr && 
+                    currentChainingNode->chainingNode != nullptr) {
+                    lastChainingNode = currentChainingNode;
+                    currentChainingNode = currentChainingNode->chainingNode;
+                }
+                if (lastChainingNode != nullptr) {
+                    delete currentChainingNode;
+                    currentChainingNode = nullptr;
+                    lastChainingNode->chainingNode = nullptr;
+                }
+                return;
+            }
+        }
+        currentNode = currentNode->nextNode;
+    }
+    throw std::runtime_error("Not found");
 }
