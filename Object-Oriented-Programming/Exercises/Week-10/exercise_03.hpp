@@ -66,6 +66,9 @@ public:
 
     const V& getValueBy(const K& key) const;
     void removeValueBy(const K& key);
+
+    size_t getCountOfUsedUnits() const;
+    size_t getCountOfUnusedUnits() const;
 };
 
 template <class K, class V>
@@ -215,4 +218,24 @@ void WeakCache<K, V>::removeValueBy(const K& key) {
         currentNode = currentNode->nextNode;
     }
     throw std::runtime_error("Not found");
+}
+
+template <class K, class V>
+size_t WeakCache<K, V>::getCountOfUsedUnits() const {
+    size_t result = 0;
+
+    CacheNode<K, V>* currentNode = this->rootNode;
+    while (currentNode != nullptr && currentNode->nextNode != nullptr) {
+        if (currentNode->isUsed) {
+            result += 1;
+        }
+        currentNode = currentNode->nextNode;
+    }
+
+    return result;
+}
+
+template <class K, class V>
+size_t WeakCache<K, V>::getCountOfUnusedUnits() const {
+    return this->cacheCapacity - this->getCountOfUsedUnits();
 }
