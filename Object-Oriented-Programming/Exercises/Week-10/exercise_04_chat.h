@@ -7,7 +7,7 @@
 
 class User;
 
-class Chat : public std::enable_shared_from_this<Chat> {
+class Chat {
 private:
     char* name = nullptr;
     std::vector<std::weak_ptr<User>> usersWeakPtrs;
@@ -25,7 +25,7 @@ public:
     ~Chat();
 
     static std::shared_ptr<Chat> create(const char* name);
-    std::shared_ptr<Chat> join(const std::shared_ptr<User>& user);
+    void join(const std::shared_ptr<User>& user);
 
     std::shared_ptr<User> operator [] (const char* name);
 
