@@ -44,9 +44,6 @@ void User::leaveChat(const char* chatName) {
 void User::send(const char* chatName, const char* content) {
     for (size_t i = 0; i < this->chats.size(); i++) {
         if (!strcmp(this->chats[i]->getName(), chatName)) {
-            if (this->chats[i]->isMuted(this->name)) {
-                return;
-            }
             Message message = Message(this->name, content, chatName);
             this->chats[i]->broadcast(message);
             return;
@@ -64,14 +61,8 @@ void User::sendPrivate(const char* chatName, const char* recipient, const char* 
     for (size_t i = 0; i < this->chats.size(); i++) {
         if (!strcmp(this->chats[i]->getName(), chatName)) {
             Message message = Message(this->name, content, recipient);
-            for (size_t j = 0; j < this->chats[i]->getUsersCount(); j++) {
-                std::shared_ptr<User> currentUserPtr = (*this->chats[i])[j].lock();
-                if (currentUserPtr && !strcmp(currentUserPtr->getName(), recipient)) {
-                    currentUserPtr->receive(message);
-                    return;
-                }
-            }
-            throw std::runtime_error("Recipient not found");
+            this->chats[i]->broadcast(message);
+            return;
         }
     }
     throw std::runtime_error("Chat not found");
