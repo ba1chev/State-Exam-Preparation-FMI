@@ -66,6 +66,7 @@ public:
 
     const V& getValueBy(const K& key) const;
     void removeValueBy(const K& key);
+    void addValueBy(const K& key, const V& value);
 
     size_t getCountOfUsedUnits() const;
     size_t getCountOfUnusedUnits() const;
@@ -119,7 +120,6 @@ template <class K, class V>
 WeakCache<K, V>::~WeakCache() {
     this->free();
 }
-
 
 template <class K, class V>
 void WeakCache<K, V>::free() {
@@ -238,4 +238,42 @@ size_t WeakCache<K, V>::getCountOfUsedUnits() const {
 template <class K, class V>
 size_t WeakCache<K, V>::getCountOfUnusedUnits() const {
     return this->cacheCapacity - this->getCountOfUsedUnits();
+}
+
+template <class K, class V>
+void WeakCache<K, V>::addValueBy(const K& key, const V& value) {
+    CacheNode<K, V>* currentNode = this->rootNode;
+    while (currentNode != nullptr && currentNode->nextNode != nullptr) {
+        if (currentNode->key == key) {
+            if (currentNode->chainingNode != nullptr) {
+                CacheNode<K, V>* currentChainingNode = currentNode->chainingNode;
+                CacheNode<K, V>* lastSeenChainingNode = currentChainingNode;
+
+                while (currentChainingNode != nullptr &&
+                    currentChainingNode->chainingNode != nullptr) {
+                    lastSeenChainingNode = currentChainingNode;
+                    currentChainingNode = currentChainingNode->chainingNode;
+                }
+                lastSeenChainingNode->chainingNode = new CacheNode<K, V>();
+                lastSeenChainingNode->chainingNode->key = key;
+                lastSeenChainingNode->chainingNode->value = value;
+                lastSeenChainingNode->chainingNode->chainingNode = nullptr;
+                return;
+            }
+        }
+        currentNode = currentNode->nextNode;
+    }
+
+    currentNode = this->rootNode;
+    while (currentNode != nullptr && currentNode->nextNode != nullptr) {
+        if (!currentNode->isUsed) {
+            currentNode->key = key;
+            currentNode->value = value;
+            currentNode->isUsed = true;
+            return;
+        }
+        currentNode = currentNode->nextNode;
+    }
+
+    throw std::runtime_error("No more space");
 }
