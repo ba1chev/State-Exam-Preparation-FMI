@@ -29,6 +29,8 @@ struct CacheNode {
 public:
     K key = K{};
     V value = V{};
+    bool isUsed = false;
+
     CacheNode* nextNode = nullptr;
     CacheNode* prevNode = nullptr;
     CacheNode* chainingNode = nullptr;
@@ -47,7 +49,6 @@ template <class K, class V>
 class WeakCache {
 private:
     CacheNode<K, V>* rootNode = nullptr;
-    size_t countOfNodes = 0;
     size_t cacheCapacity = 0;
 
     void free();
@@ -72,6 +73,7 @@ WeakCache<K, V>::WeakCache(const size_t cacheCapacity) {
 
     CacheNode<K, V>* currentNode = this->rootNode;
     for (size_t i = 0; i < this->cacheCapacity; i++) {
+        currentNode->isUsed = false;
         currentNode->nextNode = new CacheNode<K, V>();
         CacheNode<K, V>* prevNode = currentNode;
         currentNode = currentNode->nextNode;
@@ -122,6 +124,7 @@ void WeakCache<K, V>::free() {
     }
 
     while (currentNode != nullptr) {
+        currentNode->isUsed = false;
         CacheNode<K, V>* nextNode = currentNode->nextNode;
         CacheNode<K, V>* currentChainingNode = currentNode->chainingNode;
         while (currentChainingNode != nullptr) {
@@ -144,6 +147,7 @@ void WeakCache<K, V>::copyFrom(const WeakCache& other) {
     CacheNode<K, V>* currentNode = this->rootNode;
     CacheNode<K, V>* otherCurrentNode = other.rootNode;
     for (size_t i = 0; i < this->cacheCapacity; i++) {
+        currentNode->isUsed = otherCurrentNode->isUsed;
         currentNode->nextNode = new CacheNode<K, V>(*otherCurrentNode->nextNode);
         CacheNode<K, V>* currentChainingNode = currentNode;
         CacheNode<K, V>* otherCurrentChainingNode = otherCurrentNode->chainingNode;
