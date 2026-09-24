@@ -21,5 +21,8 @@ public:
     Message& operator = (Message&& other) noexcept;
     ~Message();
 
+    const char* getSender() const;
+    const char* getRecipient() const;
+
     friend std::ostream& operator << (std::ostream& os, const Message& message);
 };
