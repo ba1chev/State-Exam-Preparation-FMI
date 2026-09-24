@@ -68,6 +68,14 @@ Message::~Message() {
     this->free();
 }
 
+const char* Message::getSender() const {
+    return this->sender;
+}
+
+const char* Message::getRecipient() const {
+    return this->recipient;
+}
+
 std::ostream& operator << (std::ostream& os, const Message& message) {
     os << "[Sender]:    " << message.sender << std::endl;
     os << "[Recipient]: " << message.recipient << std::endl;
