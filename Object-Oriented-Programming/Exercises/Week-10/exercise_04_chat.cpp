@@ -36,9 +36,8 @@ Chat::~Chat() {
     this->free();
 }
 
-std::shared_ptr<Chat> Chat::join(const std::shared_ptr<User>& user) {
+void Chat::join(const std::shared_ptr<User>& user) {
     this->usersWeakPtrs.push_back(user);
-    return this->shared_from_this();
 }
 
 void Chat::leave(const char* name) {
