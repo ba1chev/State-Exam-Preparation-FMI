@@ -28,7 +28,6 @@ int main() {
     std::cout << "===== Deck =====" << std::endl;
     deck.printDeck();
 
-    // Търсим карта от същия цвят или цифра; ако няма, се тегли нова.
     DigitCard toRemove(5, CardColor::Red);
     deck.removeCard(toRemove);
 
