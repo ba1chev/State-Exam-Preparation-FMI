@@ -1,19 +1,17 @@
 #include "exercise_02_card_deck.h"
 #include <cstdlib>
 
-namespace {
-    Card* generateRandomCard() {
-        CardColor color = (CardColor)(std::rand() % 4);
-        switch (std::rand() % 3) {
-            case 0: {
-                return new DigitCard(std::rand() % 10, color);
-            }
-            case 1: {
-                return new SpecialCard((SpecialMove)(std::rand() % 2), color);
-            }
-            default: {
-                return new DebitCard((Debit)(std::rand() % 2), color);
-            }
+Card* CardDeck::generateRandomCard() {
+    CardColor color = (CardColor)(std::rand() % 4);
+    switch (std::rand() % 3) {
+        case 0: {
+            return new DigitCard(std::rand() % 10, color);
+        }
+        case 1: {
+            return new SpecialCard((SpecialMove)(std::rand() % 2), color);
+        }
+        default: {
+            return new DebitCard((Debit)(std::rand() % 2), color);
         }
     }
 }
