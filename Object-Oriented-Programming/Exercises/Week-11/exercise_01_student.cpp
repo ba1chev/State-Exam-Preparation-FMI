@@ -15,13 +15,13 @@ void Student::copyFrom(const Student& other) {
     strncpy(this->fnId, other.fnId, strlen(other.fnId));
 }
     
-Student::Student(const char* name, const char* fdId, const size_t age): Human(name, age) {
-    if (!fdId || strlen(fdId) != 10) {
+Student::Student(const char* name, const char* fnId, const size_t age): Human(name, age) {
+    if (!fnId || strlen(fnId) != 10) {
         throw std::runtime_error("Nullptr detected or invalid input data");
     }
 
-    this->fnId = new char[strlen(fdId) + 1]{};
-    strncpy(this->fnId, fdId, strlen(fdId));
+    this->fnId = new char[strlen(fnId) + 1]{};
+    strncpy(this->fnId, fnId, strlen(fnId));
 }
 
 Student::Student(const Student& other): Human(other) {
