@@ -25,6 +25,7 @@ public:
     ~CardDeck();
 
     void addCard();
+    static Card* generateRandomCard();
     void removeCard(const DigitCard& card);
     void printDeck() const;
 };
