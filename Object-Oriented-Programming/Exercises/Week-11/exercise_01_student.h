@@ -11,7 +11,7 @@ private:
 
 public:
     Student() = default;
-    Student(const char* name, const char* fdId, const size_t age);
+    Student(const char* name, const char* fnId, const size_t age);
     Student(const Student& other);
     Student(Student&& other) noexcept;
     Student& operator = (const Student& other);
