@@ -79,7 +79,6 @@ int main() {
     library.addArchive(fiction);
     library.addArchive(science);
 
-    // Читател заема и връща книга.
     Reader reader("Ivan", 1001);
     const Book& borrowed = library.searchArchiveBy("Fiction").searchBookBy(0);
     library.searchArchiveBy("Fiction").borrowBook(borrowed.getId());
@@ -94,7 +93,6 @@ int main() {
     library.searchReaderBy(1001).returnBook(0);
     library.searchArchiveBy("Fiction").returnBook(0);
 
-    // Библиотекар наблюдава архиви и проверява дали съществуват.
     Librarian librarian("Maria", 7);
     librarian.watchArchive(&library.searchArchiveBy("Fiction"));
     librarian.watchArchive(&library.searchArchiveBy("Science"));
@@ -107,7 +105,6 @@ int main() {
         << (library.searchLibrarianBy(7).archiveExists("History") ? "yes" : "no")
         << std::endl << std::endl;
 
-    // Преместване на книга между два архива.
     library.moveBookBetween("Fiction", "Science", 1);
 
     library.printLibrary();
