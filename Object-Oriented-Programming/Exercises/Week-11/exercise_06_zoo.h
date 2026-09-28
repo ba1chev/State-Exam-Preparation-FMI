@@ -6,9 +6,6 @@
 
 class Zoo {
 private:
-    // Zoo притежава секциите (полиморфни, затова raw Section* + delete в деструктора)
-    // и пазачите (shared_ptr). Секциите наблюдават пазач през суров указател, без
-    // да го притежават, затова Rule of Zero не важи за секциите.
     std::vector<Section*> sections;
     std::vector<std::shared_ptr<ZooKeeper>> keepers;
 
