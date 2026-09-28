@@ -35,7 +35,6 @@
 int main() {
     Zoo zoo;
 
-    // По една клетка в три различни секции.
     BirdSection* birds = new BirdSection("Birds");
     Exhibit birdCage("Aviary A", AnimalType::Bird, 3);
     birdCage.addAnimal(Animal("Rio", 2.0f, AnimalType::Bird));
@@ -55,7 +54,6 @@ int main() {
     zoo.addSection(mammals);
     zoo.addSection(reptiles);
 
-    // Пазач с недостатъчен опит за секцията с влечуги (изисква 5).
     std::shared_ptr<ZooKeeper> junior = zoo.addKeeper("Junior", 1, 2);
     std::cout << "assignGuard(junior, reptiles): "
         << (reptiles->assignGuard(junior.get()) ? "accepted" : "rejected")
@@ -63,7 +61,6 @@ int main() {
     std::cout << "reptiles.hasActiveGuard(): "
         << (reptiles->hasActiveGuard() ? "true" : "false") << std::endl;
 
-    // Пазач с достатъчен опит.
     std::shared_ptr<ZooKeeper> senior = zoo.addKeeper("Senior", 2, 7);
     std::cout << "assignGuard(senior, reptiles): "
         << (reptiles->assignGuard(senior.get()) ? "accepted" : "rejected")
@@ -71,7 +68,6 @@ int main() {
     std::cout << "reptiles.hasActiveGuard(): "
         << (reptiles->hasActiveGuard() ? "true" : "false") << std::endl;
 
-    // Премахване на пазача -> връзката в секцията се нулира.
     zoo.removeKeeper(2);
     std::cout << "after removeKeeper(2) reptiles.hasActiveGuard(): "
         << (reptiles->hasActiveGuard() ? "true" : "false") << std::endl << std::endl;
