@@ -1,11 +1,6 @@
 #pragma once
 #include <iostream>
-#include <stdexcept>
-
-class EmptyStackException: public std::runtime_error {
-public:
-    EmptyStackException(const char* message): std::runtime_error(message) {}
-};
+#include "exercise_02_exception.h"
 
 template <class T>
 class Stack {
